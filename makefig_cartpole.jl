@@ -18,7 +18,7 @@ function progress_for_one_step!(integ)
     return xycoords(integ)
 end
 
-function animstep!(integ, rod, ball, cart, traj)
+function animstep!(integ, rod, ball, cart, traj, graph)
     x1,x2,y1,y2 = progress_for_one_step!(integ)
     rod[] = [Point2f(x1, y1), Point2f(x2, y2)]
     ball[] = [Point2f(x1, y1), Point2f(x2, y2)]
@@ -45,14 +45,10 @@ function makefig(u0,cp)
     tail = 100   # length of plotted trajectory, in units of `dt`
     traj = CircularBuffer{Point2f}(tail)
 
-    cart_x
-    cart_ẋ
-    cart_θ
-    cart_θ̇
     fill!(traj, Point2f(x2, y2)) # add correct values to the circular buffer
     traj = Observable(traj) # make it an observable
     fig = Figure(); display(fig)
-    ax = Axis(fig[1,1])
+    ax = Axis(fig[1:2,1])
     
     c = to_color(:purple)
     tailcol = [RGBAf(c.r, c.g, c.b, (i/tail)^2) for i in 1:tail]
@@ -67,7 +63,10 @@ function makefig(u0,cp)
     ax.aspect = DataAspect()
     xlims!(ax, -2l, 2l)
     ylims!(ax, -1.5l, 1.5l)
+
+    graph= []
+
     # also return the figure object, we'll ues it!
-    return fig, integ, rod, ball, cart, traj
+    return fig, integ, rod, ball, cart, traj, graph
 end
     

@@ -22,11 +22,11 @@ l = cartpole().p[4]
 include("makefig_cartpole.jl")
 
 # %% 6. Save animations to videos
-fig, integ, rod, ball, cart, traj = makefig(u0,cp)
+fig, integ, rod, ball, cart, traj, graph = makefig(u0,cp)
 frames = 1:1200
 record(fig, "video.mp4", frames; framerate = 40) do i # i = frame number
     for j in 1:5 # step 5 times per frame
-        animstep!(integ, rod, ball, cart, traj)
+        animstep!(integ, rod, ball, cart, traj, graph)
     end
     # any other manipulation of the figure here...
 end # for each step of this loop, a frame is recorded
