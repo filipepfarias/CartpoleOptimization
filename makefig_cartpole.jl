@@ -28,6 +28,11 @@ function animstep!(integ, rod, ball, cart, traj, graph)
     push!(traj[], Point2f(x2, y2))
     traj[] = traj[] # <- important! Updating in-place the value of an
                     # `Observable` does not trigger an update!
+
+    for (i,i_graph) in enumerate(graph)
+        push!(i_graph[], Point2f(integ.t,integ.u[i]))
+        i_graph[] = i_graph[]
+    end
 end
 
 # cool it works. Let's wrap up the creation of the observables
@@ -47,7 +52,7 @@ function makefig(u0,cp)
 
     fill!(traj, Point2f(x2, y2)) # add correct values to the circular buffer
     traj = Observable(traj) # make it an observable
-    fig = Figure(); display(fig)
+    fig = Figure(size=(1000,500)); display(fig)
     ax = Axis(fig[1:2,1])
     
     c = to_color(:purple)
@@ -64,7 +69,37 @@ function makefig(u0,cp)
     xlims!(ax, -2l, 2l)
     ylims!(ax, -1.5l, 1.5l)
 
-    graph= []
+    nt = 600
+    t = range(0.0, step=-integ.dt, length=nt)
+
+    graph = [CircularBuffer{Point2f}(nt) for _ in 1:4]
+    for i_graph in graph
+        pushfirst!.([i_graph], Point2f.(t,0.0))
+    end
+
+    graph = Observable.(graph)
+
+    ax_graph_1 = Axis(fig[1,2])
+    ax_graph_1.title = "Cart position"
+    ax_graph_1.ylabel = "Distance (m)"
+    ax_graph_1.xlabel = "time (s)"
+    ax_graph_2 = Axis(fig[2,2])
+    ax_graph_2.title = "Pole position"
+    ax_graph_2.ylabel = "Angle (rad)"
+    ax_graph_2.xlabel = "time (s)"
+
+    lines!(ax_graph_1, graph[1], label=L"x")
+    lines!(ax_graph_1, graph[2], label=L"\dot{x}")
+    lines!(ax_graph_2, graph[3], label=L"\theta")
+    lines!(ax_graph_2, graph[4], label=L"\dot{\theta}")
+
+    axislegend(ax_graph_1)
+    axislegend(ax_graph_2)
+
+    lift(graph[1]) do g
+        xlims!(ax_graph_1, g[1][1], g[end][1])
+        xlims!(ax_graph_2, g[1][1], g[end][1])
+    end
 
     # also return the figure object, we'll ues it!
     return fig, integ, rod, ball, cart, traj, graph
