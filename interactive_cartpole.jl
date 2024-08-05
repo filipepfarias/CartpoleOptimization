@@ -12,8 +12,9 @@ _cp = cartpole(;Fc = 0.0)
 linear_cartpole_system = linear_cartpole(_cp)
 
 pulse(t,dt) = .5 + .5tanh(1e6*t) - (.5 - .5tanh(-1e6*(t-dt)))
-cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, 4π/45, 0.0]), linear_cartpole_system, 1e1I, diagm([5e5,1e4,1e3,1e3]),t -> 100pulse(t-5,.1))
-# cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, π/9, 0.0]), linear_cartpole_system, 1e5I, diagm([5e4,1e-1,1e3,1e3]),t -> 100pulse(t-5,.1))
+W(t) = 100pulse(t-5,.1)
+cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, 4π/45, 0.0]), linear_cartpole_system, 1e1I, diagm([5e5,1e4,1e3,1e3]),W)
+# cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, π/9, 0.0]), linear_cartpole_system, 1e5I, diagm([5e4,1e-1,1e3,1e3]),W)
 cp = cl_cartpole_system
 u0 = cl_cartpole_system.u0
 l = _cp.p[4]
@@ -31,7 +32,7 @@ include("makefig_cartpole.jl")
 
 fig, integ, rod, ball, cart, traj, graph = makefig(u0,cp)
 # The run button is actually pretty simple, we'll add it below the plot
-run = Button(fig[3,1:2]; label = "run", tellwidth = false)
+run = Button(fig[4,1:2]; label = "run", tellwidth = false)
 # This button will start/stop an animation. It's actually surprisingly
 # simple to do this. The magic code is:
 isrunning = Observable(false)

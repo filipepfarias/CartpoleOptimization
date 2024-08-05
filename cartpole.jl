@@ -96,8 +96,9 @@ function cl_cartpole(
     
     @inbounds function cl_LTI(x, p, t)
         u, M, m, l, g, Fc, dMf = cp.p
-        u =  -(K*x)[1] + W(t); # [179.112  -31.4023  -240.162  -46.9267]
+        K,x_ref = p
+        u =  -(K*(x - x_ref(t)))[1] + W(t); # [179.112  -31.4023  -240.162  -46.9267]
         return cp.f.f(x, (u, M, m, l, g, Fc, dMf),t)
     end
-    return ODEProblem(cl_LTI, cp.u0, cp.tspan,[])
+    return ODEProblem(cl_LTI, cp.u0, cp.tspan,(K, t -> [.0,0.0,.0,0.0]))
 end

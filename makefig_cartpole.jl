@@ -29,10 +29,18 @@ function animstep!(integ, rod, ball, cart, traj, graph)
     traj[] = traj[] # <- important! Updating in-place the value of an
                     # `Observable` does not trigger an update!
 
-    for (i,i_graph) in enumerate(graph)
+    K = integ.sol.prob.p[1]
+    r = integ.sol.prob.p[2](integ.t)
+    u = -K*(integ.u - r)    
+
+    for (i,i_graph) in enumerate(graph[1:4])
         push!(i_graph[], Point2f(integ.t,integ.u[i]))
         i_graph[] = i_graph[]
     end
+
+    push!(graph[5][], Point2f(integ.t,u[1]))
+    graph[5][] = graph[5][]
+    # graph[6][] = graph[6][]
 end
 
 # cool it works. Let's wrap up the creation of the observables
@@ -53,7 +61,7 @@ function makefig(u0,cp)
     fill!(traj, Point2f(x2, y2)) # add correct values to the circular buffer
     traj = Observable(traj) # make it an observable
     fig = Figure(size=(1000,500)); display(fig)
-    ax = Axis(fig[1:2,1])
+    ax = Axis(fig[1:3,1])
     
     c = to_color(:purple)
     tailcol = [RGBAf(c.r, c.g, c.b, (i/tail)^2) for i in 1:tail]
@@ -72,7 +80,7 @@ function makefig(u0,cp)
     nt = 600
     t = range(0.0, step=-integ.dt, length=nt)
 
-    graph = [CircularBuffer{Point2f}(nt) for _ in 1:4]
+    graph = [CircularBuffer{Point2f}(nt) for _ in 1:5]
     for i_graph in graph
         pushfirst!.([i_graph], Point2f.(t,0.0))
     end
@@ -87,19 +95,29 @@ function makefig(u0,cp)
     ax_graph_2.title = "Pole position"
     ax_graph_2.ylabel = "Angle (rad)"
     ax_graph_2.xlabel = "time (s)"
+    ax_graph_3 = Axis(fig[3,2])
+    ax_graph_3.title = "Input"
+    ax_graph_3.ylabel = "Force (N)"
+    ax_graph_3.xlabel = "time (s)"
 
     lines!(ax_graph_1, graph[1], label=L"x")
     lines!(ax_graph_1, graph[2], label=L"\dot{x}")
     lines!(ax_graph_2, graph[3], label=L"\theta")
     lines!(ax_graph_2, graph[4], label=L"\dot{\theta}")
+    lines!(ax_graph_3, graph[5], label=L"u")
+    # lines!(ax_graph_3, graph[6], label=L"r")
 
     axislegend(ax_graph_1)
     axislegend(ax_graph_2)
+    axislegend(ax_graph_3)
 
     lift(graph[1]) do g
         xlims!(ax_graph_1, g[1][1], g[end][1])
         xlims!(ax_graph_2, g[1][1], g[end][1])
+        xlims!(ax_graph_3, g[1][1], g[end][1])
     end
+
+    ylims!(ax_graph_3,-130,130)
 
     # also return the figure object, we'll ues it!
     return fig, integ, rod, ball, cart, traj, graph

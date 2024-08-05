@@ -13,6 +13,7 @@ linear_cartpole_system = linear_cartpole(cartpole(;Fc = 0.0))
 pulse(t,dt) = .5 + .5tanh(1e6*t) - (.5 - .5tanh(-1e6*(t-dt)))
 cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, 4π/45, 0.0]), linear_cartpole_system, 1e1I, diagm([5e5,1e4,1e3,1e3]),t -> 100pulse(t-5,.1))
 # cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, π/9, 0.0]), linear_cartpole_system, 1e5I, diagm([5e4,1e-1,1e3,1e3]),t -> 100pulse(t-5,.1))
+
 cp = cl_cartpole_system
 u0 = cl_cartpole_system.u0
 l = cartpole().p[4]
