@@ -17,7 +17,7 @@ function cartpole(q0 = SVector([0.0, 0.0, 0.0, 0.0]...);
 end
 @inbounds function cartpole_rule(
                             q::SVector,
-                            p::NTuple{7,Number},
+                            p::Union{NTuple{7,Number}},
                             t::Number)
     u, M, m, l, g, Fc, dMf = p
     x, ẋ, θ, θ̇ = q
@@ -38,7 +38,7 @@ end
 
 @inbounds function cartpole_rule(
     q::Vector,
-    p::NTuple{7,Number},
+    p::Union{NTuple{7,Number},Tuple{AbstractVariableRef,Number,Number,Number,Number,Number,Number}},
     t::Number)
 
     u, M, m, l, g, Fc, dMf = p
