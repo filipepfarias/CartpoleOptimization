@@ -5,31 +5,21 @@ using Makie.GeometryBasics
 using DataStructures: CircularBuffer
 
 include("cartpole.jl")
+include("makefig_cartpole.jl")
 # A. Kroll, H. Schulte / Applied Soft Computing 25 (2014) 496–513
 
-_cp = cartpole(;Fc = 0.0)
+# _cp = cartpole(;Fc = 0.0)
 
-linear_cartpole_system = linear_cartpole(_cp)
+# linear_cartpole_system = linear_cartpole(_cp)
 
-pulse(t,dt) = .5 + .5tanh(1e6*t) - (.5 - .5tanh(-1e6*(t-dt)))
-W(t) = 100pulse(t-5,.1)
-cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, 4π/45, 0.0]), linear_cartpole_system, 1e1I, diagm([5e5,1e4,1e3,1e3]),W)
-# cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, π/9, 0.0]), linear_cartpole_system, 1e5I, diagm([5e4,1e-1,1e3,1e3]),W)
-cp = cl_cartpole_system
-u0 = cl_cartpole_system.u0
-l = _cp.p[4]
-
-# Solve diffeq with constant step for smoother curves
-# diffeq = (adaptdt = 1/30/5)
-include("makefig_cartpole.jl")
-
-# %% 7. Interactive application
-# Makie.jl has tremendously strong capabilities for real-time
-# interactivity. To learn all of this takes time of course,
-# and you'll need to consult the online documentation.
-# Here we will do two interactions: 1) a play/stop button
-# 2) clicking on the screen and getting a new initial condition!
-
+# pulse(t,dt) = .5 + .5tanh(1e6*t) - (.5 - .5tanh(-1e6*(t-dt)))
+# W(t) = 100pulse(t-5,.1)
+# cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, 4π/45, 0.0]), linear_cartpole_system, 1e1I, diagm([5e5,1e4,1e3,1e3]),W)
+# # cl_cartpole_system = cl_cartpole(cartpole([0.3, 0.0, π/9, 0.0]), linear_cartpole_system, 1e5I, diagm([5e4,1e-1,1e3,1e3]),W)
+# cp = cl_cartpole_system
+# u0 = cl_cartpole_system.u0
+# l = _cp.p[4]
+function interactive_cartpole
 fig, integ, rod, ball, cart, traj, graph = makefig(u0,cp)
 # The run button is actually pretty simple, we'll add it below the plot
 run = Button(fig[4,1:2]; label = "run", tellwidth = false)

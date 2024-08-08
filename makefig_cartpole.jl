@@ -5,6 +5,7 @@ using Makie.GeometryBasics
 using DataStructures: CircularBuffer
 
 function xycoords(state)
+    l = state.sol.prob.p.l
    θ1 = state[3]
    x1 = state[1]
    y1 = 0.0
@@ -29,16 +30,17 @@ function animstep!(integ, rod, ball, cart, traj, graph)
     traj[] = traj[] # <- important! Updating in-place the value of an
                     # `Observable` does not trigger an update!
 
-    K = integ.sol.prob.p[1]
-    r = integ.sol.prob.p[2](integ.t)
-    u = -K*(integ.u - r)    
+    # K = integ.sol.prob.p[1]
+    # r = integ.sol.prob.p[2](integ.t)
+    # u = -K*(integ.u - r)    
+    u = integ.sol.prob.p.u(integ.u,integ.t)
 
     for (i,i_graph) in enumerate(graph[1:4])
         push!(i_graph[], Point2f(integ.t,integ.u[i]))
         i_graph[] = i_graph[]
     end
 
-    push!(graph[5][], Point2f(integ.t,u[1]))
+    push!(graph[5][], Point2f(integ.t,u))
     graph[5][] = graph[5][]
     # graph[6][] = graph[6][]
 end
@@ -47,9 +49,10 @@ end
 # and plots in a function (just to re-initialie everything)
 function makefig(u0,cp)
     # cp = cartpole(;fₓ = one)
+    l = cp.p.l
     integ = init(cp, Tsit5(); adaptive = false, dt = .005)
     
-    x1,x2,y1,y2 = xycoords(u0)
+    x1,x2,y1,y2 = xycoords(integ)
     cart = Observable([[Point2f(x1, y1)] .+ Point2f[(-.1, -.05), (-.1, 0.0), 
                                         (.1, 0.0), (.1, -.05)]])
     rod  = Observable([Point2f(x1, y1), Point2f(x2, y2)])
@@ -74,7 +77,7 @@ function makefig(u0,cp)
     lines!(ax, traj; linewidth = 3, color = tailcol)
     ax.title = "Cartpole"
     ax.aspect = DataAspect()
-    xlims!(ax, -2l, 2l)
+    xlims!(ax, -2.5l, 2.5l)
     ylims!(ax, -1.5l, 1.5l)
 
     nt = 600
@@ -117,6 +120,8 @@ function makefig(u0,cp)
         xlims!(ax_graph_3, g[1][1], g[end][1])
     end
 
+    ylims!(ax_graph_1,-2,2)
+    ylims!(ax_graph_2,-4,4)
     ylims!(ax_graph_3,-130,130)
 
     # also return the figure object, we'll ues it!
