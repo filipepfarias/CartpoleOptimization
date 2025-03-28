@@ -63,12 +63,12 @@ end
     fc = Fc*tanh(1e6*ẋ)   
     
     ẍ = (fc - u + (-((-l*(fc - u + l*m*sin(θ)*(θ̇^2))*m*cos(θ)) / 
-    (-M - m) + dMf*θ̇ - g*l*m*sin(θ))*l*m*cos(θ)) / 
-    ((-(l^2)*(m^2)*(cos(θ)^2)) / (-M - m) - (l^2)*m) + 
-    l*m*sin(θ)*(θ̇^2)) / (-M - m)
+        (-M - m) + dMf*θ̇ - g*l*m*sin(θ))*l*m*cos(θ)) / 
+        ((-(l^2)*(m^2)*(cos(θ)^2)) / (-M - m) - (l^2)*m) + 
+        l*m*sin(θ)*(θ̇^2)) / (-M - m)
     θ̈ = ((-l*(fc - u + l*m*sin(θ)*(θ̇^2))*m*cos(θ)) / 
-    (-M - m) + dMf*θ̇ - g*l*m*sin(θ)) / ((-(l^2)*(m^2)*(cos(θ)^2)) / 
-    (-M - m) - (l^2)*m)
+        (-M - m) + dMf*θ̇ - g*l*m*sin(θ)) / ((-(l^2)*(m^2)*(cos(θ)^2)) / 
+        (-M - m) - (l^2)*m)
     
     return (ẋ, ẍ, θ̇, θ̈)
 end
@@ -114,7 +114,7 @@ function trajectory_opt(cp::ODEProblem=cartpole();
     x=([0.95,0,π,0],[0,0,0,0]),
     N=200)
     Tk = range(t...,N)
-    Uk = zeros(N)
+    # Uk = zeros(N)
     d = size(cp.u0,1)
     model = Model(Ipopt.Optimizer);
     

@@ -19,8 +19,10 @@ include("makefig_cartpole.jl")
 # cp = cl_cartpole_system
 # u0 = cl_cartpole_system.u0
 # l = _cp.p[4]
-function interactive_cartpole
-fig, integ, rod, ball, cart, traj, graph = makefig(u0,cp)
+function interactive_cartpole()
+    cp = swingup_and_stabilization()
+    u0 = cp.u0
+    fig, integ, rod, ball, cart, traj, graph = makefig(u0,cp)
 # The run button is actually pretty simple, we'll add it below the plot
 run = Button(fig[4,1:2]; label = "run", tellwidth = false)
 # This button will start/stop an animation. It's actually surprisingly
@@ -72,4 +74,5 @@ on(spoint) do z
     # traj[] = traj[]
     # rod[] = [Point2f(0, 0), Point2f(x1, y1), Point2f(x2, y2)]
     # balls[] = [Point2f(x1, y1), Point2f(x2, y2)]
+end
 end
